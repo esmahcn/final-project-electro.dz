@@ -36,21 +36,21 @@ function ProductShowcase() {
   ];
 
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <section className="bg-gray-50 pt-4 pb-4">
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {sections.map((section, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: i * 0.2 }}
               viewport={{ once: true }}
               className="bg-gradient-to-b from-white to-orange-50 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition transform border border-gray-200 flex flex-col"
             >
               {/* Sticky Section Header */}
-              <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-white sticky top-0 z-10">
-                <h2 className="text-xl font-semibold text-gray-800">{section.title}</h2>
+              <div className="flex justify-between items-center p-3 border-b border-gray-200 bg-white sticky top-0 z-10">
+                <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-0">{section.title}</h2>
                 <button className="text-orange-500 hover:text-orange-600 font-medium text-sm">
                   {section.linkText}
                 </button>
@@ -58,16 +58,16 @@ function ProductShowcase() {
 
               {/* Products List */}
               <ul
-                className="p-4 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-orange-400 scrollbar-track-gray-100"
-                style={{ maxHeight: "300px" }}
+                className="p-3 space-y-3 overflow-y-auto scrollbar-thin scrollbar-thumb-orange-400 scrollbar-track-gray-100"
+                style={{ maxHeight: "280px" }}
               >
                 {section.products.map((p, idx) => (
                   <motion.li
                     key={idx}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     whileHover={{ scale: 1.03, boxShadow: "0 6px 15px rgba(0,0,0,0.15)" }}
-                    transition={{ duration: 0.3, delay: idx * 0.1 }}
+                    transition={{ duration: 0.3, delay: idx * 0.05 }}
                     viewport={{ once: true }}
                     className="border-b border-gray-200 pb-2 last:border-none rounded-md cursor-pointer flex items-center gap-3 bg-white p-2"
                   >
@@ -77,7 +77,7 @@ function ProductShowcase() {
                       className="w-16 h-16 object-cover rounded-lg shadow-sm"
                     />
                     <div>
-                      <p className="text-sm font-semibold text-gray-800 mb-1">{p.name}</p>
+                      <p className="text-sm font-semibold text-gray-800 mb-0">{p.name}</p>
                       <p className="text-xs text-gray-500">
                         Code: <span className="font-medium">{p.code}</span> | Bulk:{" "}
                         <span className="font-medium">{p.bulk}</span>
