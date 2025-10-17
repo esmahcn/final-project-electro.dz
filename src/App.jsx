@@ -6,7 +6,9 @@ function App() {
   return (
     <div className="font-sans">
       <Navbar />
-      <Home />
+        <main className="flex-grow">
+        <Home />
+      </main>
       <Footer />
     </div>
   );
