@@ -1,0 +1,74 @@
+let swRegistration = null;
+
+// PRODUCCION:
+//  const SW_FILENAME = '/app/swNico.js';
+//  const SW_SCOPE = '/app/';
+// DESARROLLO:
+  const SW_FILENAME = '/swNico.js?v=4';
+  const SW_SCOPE = '/';
+
+window.onload = (e) => {
+  const addBtn = document.getElementById('addToDesktop');
+  if (addBtn) {
+    addBtn.style.display = 'none';
+  }
+
+  registerSW();
+  
+  let deferredPrompt;
+    
+  window.addEventListener('beforeinstallprompt', (e) => {
+    console.log('beforeinstallprompt');
+    e.preventDefault();
+    deferredPrompt = e;
+    // Update UI to notify the user they can add to home screen
+    if (addBtn) {
+      addBtn.style.display = 'block';
+    }
+  });
+
+  if (addBtn) {
+    addBtn.addEventListener('click', () => {
+      addBtn.style.display = 'none';
+
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the A2HS prompt');
+        } else {
+          console.log('User dismissed the A2HS prompt');
+        }
+        deferredPrompt = null;
+      });
+    });
+  }
+  
+}
+
+
+async function registerSW() {
+  if ('serviceWorker' in navigator) {
+    if (navigator.serviceWorker.controller) {
+      console.log('Active service worker found, no need to register.-.');
+    } 
+    
+    try {
+      await navigator.serviceWorker
+                     .register(SW_FILENAME, {
+                        scope: SW_SCOPE
+                     })
+                     .then(function (swReg) {
+                        console.log('Service worker has been registered for scope: ' + swReg.scope + '.-.');
+                        swRegistration = swReg;
+              //        messaging.useServiceWorker(swRegistration);
+                     })
+                     .catch(function(err) {
+                       console.log('Service worker error.-.', err);
+                     });                     
+    } catch (e) {
+      console.log('ServiceWorker registration failed. Sorry about that.'); 
+    }
+  } else {
+    console.log('ServiceWorker no disponible.'); 
+  }
+}

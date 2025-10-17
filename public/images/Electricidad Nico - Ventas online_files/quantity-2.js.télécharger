@@ -1,0 +1,54 @@
+/**=====================
+  Quantity 2 js
+==========================**/
+$(".addcart-button").click(function () {
+  console.log('.addcart-button click');
+  $(this).next().addClass("open");
+  $(".add-to-cart-box .qty-input").val('1');
+  addToCart(this);
+});
+
+$('.add-to-cart-box').on('click', function () {
+  console.log('.add-to-cart-box click');
+  var $qty = $(this).siblings(".qty-input");
+  var currentVal = parseInt($qty.val());
+  if (!isNaN(currentVal)) {
+    $qty.val(currentVal + 1);
+  }
+});
+
+$('.qty-input').on('change', function () {
+  console.log('.qty-input change');
+  var $qty = $(this);
+  var currentVal = parseInt($qty.val());
+  if (isNaN(currentVal) || currentVal <= 1) {
+    $qty.val(0);
+    var _removeCls = $(this).parents('.cart_qty');
+    $(_removeCls).removeClass("open");
+  }
+  addToCart(this);
+});
+
+$('.qty-left-minus').on('click', function () {
+  console.log('.qty-left-minus click');
+  var $qty = $(this).siblings(".qty-input");
+  var currentVal = parseInt($qty.val());
+  if (isNaN(currentVal) || currentVal <= 1) {
+    $qty.val(0);
+    var _removeCls = $(this).parents('.cart_qty');
+    $(_removeCls).removeClass("open");
+  } else {
+    $qty.val(currentVal - 1);
+  }
+  addToCart(this);
+});
+
+$('.qty-right-plus').click(function () {
+  console.log('.qty-right-minus click');
+  var $qty = $(this).siblings(".qty-input");
+  var currentVal = parseInt($qty.val());
+  if (!isNaN(currentVal)) {
+    $qty.val(currentVal + 1);
+    addToCart(this);
+  }
+});

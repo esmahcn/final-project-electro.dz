@@ -1,0 +1,70 @@
+/**
+ * Script para crear un carrusel de elementos de una clase determinada
+ * con los métodos fadeIn() y fadeOut() para transiciones suaves cada x segundos.
+ * 
+ * Prerequisito: jQuery debe estar incluido en la página.
+ */
+  
+// Función para inicializar el carrusel en un contenedor específico
+function initCarousel(containerSelector, itemSelector, seconds) {
+  const $container = $(containerSelector);
+
+  if ($container.length === 0) {
+    console.error('No se encontró el contenedor:', containerSelector);
+    return;
+  }
+
+  // Seleccionar todos los elementos de clase / filtro recibido dentro del contenedor
+  const $items = $container.find(itemSelector);
+  const totalItems = $items.length;
+
+  if (totalItems <= 4) {
+    console.log('No hay suficientes elementos para crear un carrusel');
+    return;
+  }
+
+  // Crear un contenedor si los elementos aún no están en uno
+  if (!$container.hasClass('carousel-wrapper')) {
+      $container.addClass('carousel-wrapper');
+      $container.css({
+        position: 'relative'
+      });
+  }
+
+  // Configurar el estilo de los elementos para que ocupen el espacio adecuado
+//  $items.css({
+//    display: 'inline-block',
+//    verticalAlign: 'top',
+//    width: 'calc(25% - 20px)', // Ajustar según tus necesidades
+//    margin: '0 10px'
+//  });
+
+  // Ocultar todos los elementos excepto los primeros 4
+  $items.each(function(index) {
+    if (index >= 4) {
+      $(this).hide();
+    }
+  });
+
+  let currentIndex = 0;
+
+  // Función para rotar los elementos con fade
+  function rotateItems() {
+    // Ocultar el elemento actual con animación
+    $($items[currentIndex]).fadeOut(400, function() {
+      // Calcular el índice del próximo elemento a mostrar (4 adelante)
+      const showIndex = (currentIndex + 4) % totalItems;
+
+      // Mostrar el nuevo elemento con animación
+      $($items[showIndex]).fadeIn(400);
+
+      // Actualizar el índice actual
+      currentIndex = (currentIndex + 1) % totalItems;
+      
+      console.log([totalItems, currentIndex, showIndex]);
+    });
+  }
+
+  // Iniciar la rotación automática
+  setInterval(rotateItems, seconds * 1000);
+}

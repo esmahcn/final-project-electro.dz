@@ -1,0 +1,44 @@
+$(document).ready(function () {
+  $('.addtocart_btn.active').each(function() {
+    $(this).find('.addcart-button').click();
+  });
+  $('.load-view-btn').on('click', function() {
+    loadViewBtnClick(this);
+    return false;
+  });
+});
+
+function loadViewBtnClick(el) {
+//  $(el).closest('ol').find('li').removeClass('active');
+//  $(el).closest('li').addClass('active');
+  var url = $(el).data('url');
+  var destination = $(el).data('destination');
+  var spinner = $(el).data('spinner');
+  loadView(url, destination, spinner);
+}
+
+function loadModalBtnClick(el, identifier) {
+  var url = $(el).data('url');
+  var destination = identifier + '-content'; // $(el).data('destination');
+  var spinner = identifier + '-spinner'; // $(el).data('spinner');
+  loadView(url, destination, spinner);
+  setTimeout(function() {
+    $('#show-' + identifier + '-btn').click();
+  }, 100);
+}   
+
+
+function loadView(loadViewUrl, destination, spinner) {
+  $.ajax({
+    type: "get",
+    url: loadViewUrl,
+    beforeSend: function() { 
+      $('#' + destination).html('');
+      if (spinner) { $('#' + spinner).show(); } 
+    },
+    success: function(data) {
+      $('#' + destination).html(data);
+    },
+    complete: function(result) { if (spinner) { $('#' + spinner).hide(); } }
+  });
+}
