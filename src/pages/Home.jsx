@@ -6,6 +6,8 @@ import Brands from "../components/Brands";
 import FeaturedProducts from "../components/FeaturedProducts";
 import AboutSection from "../components/AboutSection";
 import ContactSection from "../components/ContactSection";
+import SocialSection from "../components/SocialSection";
+
 const Home = () => {
   return (
     <div className="bg-gray-50">
@@ -16,6 +18,7 @@ const Home = () => {
            <FeaturedProducts />
             <AboutSection />
             <ContactSection />
+             <SocialSection />
     </div>
   );
 };
