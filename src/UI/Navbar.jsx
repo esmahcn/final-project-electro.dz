@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { FaSearch, FaShoppingCart, FaUser, FaBars, FaTimes } from "react-icons/fa";
 
-const Navbar = () => {
+const Navbar = ({ cartCount = 0 }) => {
   const [openUserMenu, setOpenUserMenu] = useState(false);
   const [openMobileMenu, setOpenMobileMenu] = useState(false);
 
@@ -41,9 +41,14 @@ const Navbar = () => {
             {openMobileMenu ? <FaTimes size={20} /> : <FaBars size={20} />}
           </button>
 
-          {/* Cart */}
+          {/* Cart with badge */}
           <button className="relative w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition">
             <FaShoppingCart />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs font-bold px-1.5 rounded-full animate-bounce">
+                {cartCount}
+              </span>
+            )}
           </button>
 
           {/* User Menu */}

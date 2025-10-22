@@ -1,82 +1,105 @@
-import React, { useState } from "react";
-import { FaSearch, FaBars } from "react-icons/fa";
-
-// Mock product data
-const productsData = [
-  { id: 1, name: "LED Bulb 9W", price: 150, image: "/images/Electricidad Nico - Ventas online_files/595708.jpg", category: "Lighting", description: "High-quality LED bulb 9W, energy-saving and long-lasting." },
-  { id: 2, name: "Extension Cord 5m", price: 300, image: "/images/Electricidad Nico - Ventas online_files/595708.jpg", category: "Cables", description: "5 meters extension cord, durable and safe for home use." },
-  { id: 3, name: "Switch 1 Gang", price: 200, image: "/images/Electricidad Nico - Ventas online_files/595708.jpg", category: "Electrical", description: "Single gang switch, easy to install." },
-  { id: 4, name: "Socket 2 Gang", price: 250, image: "/images/Electricidad Nico - Ventas online_files/595708.jpg", category: "Electrical", description: "2 gang socket, compatible with most plugs." },
-  { id: 5, name: "LED Strip 5m", price: 1200, image: "/images/Electricidad Nico - Ventas online_files/595708.jpg", category: "Lighting", description: "5 meters LED strip, bright and flexible." },
-];
-
-const categories = ["All", "Lighting", "Cables", "Electrical"];
+import React, { useState, useEffect } from "react";
+import {
+  FaChevronDown,
+  FaSearch,
+  FaShoppingCart,
+  FaEye,
+  FaBars,
+  FaTimes,
+} from "react-icons/fa";
 
 function Shop() {
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [sortOption, setSortOption] = useState("name-asc");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [sortOrder, setSortOrder] = useState("A-Z");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [quickViewProduct, setQuickViewProduct] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const productsPerPage = 8;
+  const [isSticky, setIsSticky] = useState(false);
+  const [clickedButton, setClickedButton] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const filteredProducts = productsData
+  const categories = [
+    "All",
+    "Iluminación",
+    "Herramientas",
+    "Cables",
+    "Interruptores",
+    "Accesorios",
+  ];
+
+  const products = [
+    { id: 1, name: "Cable de Cobre 10mm", price: 1500, category: "Cables", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 2, name: "Lámpara LED 20W", price: 800, category: "Iluminación", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 3, name: "Destornillador Eléctrico", price: 2300, category: "Herramientas", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 4, name: "Interruptor Doble", price: 700, category: "Interruptores", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 5, name: "Toma Corriente", price: 900, category: "Accesorios", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 6, name: "Bombilla LED 10W", price: 500, category: "Iluminación", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+     { id: 7, name: "Interruptor Doble", price: 700, category: "Interruptores", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 8, name: "Toma Corriente", price: 900, category: "Accesorios", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 9, name: "Bombilla LED 10W", price: 500, category: "Iluminación", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+  ];
+
+  // Sticky sidebar
+  useEffect(() => {
+    const handleScroll = () => setIsSticky(window.scrollY > 100);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const filteredProducts = products
     .filter(
-      (p) =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        (selectedCategory === "All" || p.category === selectedCategory)
+      (p) => selectedCategory === "All" || p.category === selectedCategory
     )
-    .sort((a, b) => {
-      if (sortOption === "price-asc") return a.price - b.price;
-      if (sortOption === "price-desc") return b.price - a.price;
-      if (sortOption === "name-desc") return b.name.localeCompare(a.name);
-      return a.name.localeCompare(b.name);
-    });
+    .sort((a, b) =>
+      sortOrder === "A-Z" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
+    );
 
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-  const displayedProducts = filteredProducts.slice(
-    (currentPage - 1) * productsPerPage,
-    currentPage * productsPerPage
-  );
+  const handleAddToCart = (id) => {
+    setClickedButton(id);
+    setTimeout(() => setClickedButton(null), 300);
+  };
 
-  const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
-  const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const handleViewProduct = (product) => {
+    setSelectedProduct(product);
+  };
+
+  const closeModal = () => {
+    setSelectedProduct(null);
+  };
 
   return (
-    <div className="flex flex-col md:flex-row p-4 md:p-8 gap-6 bg-gray-50 relative">
-      {/* Mobile Sidebar Toggle */}
-      <button
-        className="md:hidden absolute top-4 left-4 z-50 bg-orange-500 text-white p-2 rounded flex items-center gap-1"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      >
-        <FaBars /> Filters
-      </button>
-
+    <div className="flex min-h-screen bg-gray-50 relative">
       {/* Sidebar */}
       <aside
-        className={`fixed md:relative top-0 left-0 h-full w-64 bg-gray-100 border border-white p-4 rounded-lg z-40 transform transition-transform duration-300 ${
+        className={`bg-gray-200 border-r border-white fixed lg:static top-0 left-0 w-64 lg:w-1/4 xl:w-1/5 h-full transform ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 md:sticky md:top-8 md:max-h-[calc(100vh-4rem)] md:overflow-y-auto`}
+        } lg:translate-x-0 transition-transform duration-300 z-40 p-4 ${
+          isSticky ? "lg:sticky lg:top-20" : ""
+        }`}
       >
-        <h2 className="font-bold text-lg mb-4">Categories</h2>
-        <ul>
+        <div className="flex justify-between items-center lg:hidden mb-4">
+          <h2 className="text-lg font-semibold text-gray-700">Categorías</h2>
+          <button onClick={() => setSidebarOpen(false)} className="text-gray-600">
+            <FaTimes size={20} />
+          </button>
+        </div>
+
+        <h2 className="hidden lg:block text-lg font-semibold text-gray-700 mb-4">
+          Categorías
+        </h2>
+        <ul className="space-y-2">
           {categories.map((cat) => (
-            <li key={cat} className="mb-1">
-              <button
-                onClick={() => {
-                  setSelectedCategory(cat);
-                  setSidebarOpen(false);
-                }}
-                className={`w-full text-left py-2 px-2 rounded-l-lg hover:bg-orange-100 transition flex items-center ${
-                  selectedCategory === cat
-                    ? "bg-orange-100 border-l-4 border-orange-500 font-semibold"
-                    : ""
-                }`}
-              >
-                {cat}
-              </button>
+            <li
+              key={cat}
+              onClick={() => {
+                setSelectedCategory(cat);
+                setSidebarOpen(false);
+              }}
+              className={`cursor-pointer py-2 px-3 rounded-md text-sm font-medium transition-all ${
+                selectedCategory === cat
+                  ? "bg-white border-l-4 border-orange-500 text-orange-600"
+                  : "hover:bg-white hover:text-orange-500"
+              }`}
+            >
+              {cat}
             </li>
           ))}
         </ul>
@@ -85,129 +108,136 @@ function Shop() {
       {/* Overlay for mobile */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/30 z-30 md:hidden"
+          className="fixed inset-0 bg-black bg-opacity-30 z-30 lg:hidden"
           onClick={() => setSidebarOpen(false)}
-        />
+        ></div>
       )}
 
-      {/* Main content */}
-      <div className="flex-1">
-        {/* Search & Sort */}
-        <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="border border-white p-2 rounded w-full md:w-1/2 focus:outline-none focus:ring-2 focus:ring-orange-300"
-          />
-          <select
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
-            className="border border-white p-2 rounded w-full md:w-1/4 focus:outline-none focus:ring-2 focus:ring-orange-300"
+      {/* Main Content */}
+      <main className="flex-1 lg:w-3/4 xl:w-4/5 p-4 sm:p-6 lg:p-8">
+        {/* Top controls */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <button
+            className="lg:hidden p-2 border border-white bg-gray-100 rounded flex items-center gap-2 text-gray-700"
+            onClick={() => setSidebarOpen(true)}
           >
-            <option value="name-asc">Name: A to Z</option>
-            <option value="name-desc">Name: Z to A</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-          </select>
+            <FaBars /> Filters
+          </button>
+
+          <div className="flex items-center border border-white bg-white rounded-md px-3 py-2 w-full sm:w-72">
+            <FaSearch className="text-gray-400 mr-2" />
+            <input
+              type="text"
+              placeholder="Buscar producto..."
+              className="w-full outline-none text-sm"
+            />
+          </div>
+
+          <div className="flex items-center border border-white bg-white rounded-md px-3 py-2">
+            <FaChevronDown className="text-gray-400 mr-2" />
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              className="bg-transparent outline-none text-sm"
+            >
+              <option value="A-Z">Nombre: A-Z</option>
+              <option value="Z-A">Nombre: Z-A</option>
+            </select>
+          </div>
         </div>
 
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {displayedProducts.map((product) => (
+        {/* Products grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          {filteredProducts.map((p) => (
             <div
-              key={product.id}
-              className="border border-white rounded-lg overflow-hidden shadow-sm transform transition duration-300 hover:shadow-xl hover:-translate-y-1 bg-white relative group"
+              key={p.id}
+              className="bg-white border border-white rounded-lg shadow-sm hover:shadow-md transition p-3 flex flex-col"
             >
-              {/* Image with hover effects */}
-              <div className="relative overflow-hidden">
+              <div className="overflow-hidden rounded-md">
                 <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-48 object-cover transition duration-500 group-hover:scale-105 group-hover:brightness-90"
+                  src={p.image}
+                  alt={p.name}
+                  className="w-full h-36 object-cover transform transition-transform duration-300 hover:scale-105"
                 />
-                {/* Overlay buttons */}
-                <div className="absolute inset-0 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition duration-300 bg-black/20">
-                  <button
-                    className="bg-white p-2 rounded-full mb-2 hover:bg-orange-50 transition"
-                    onClick={() => {
-                      setQuickViewProduct(product);
-                      setQuantity(1);
-                    }}
-                  >
-                    <FaSearch className="text-orange-500" />
-                  </button>
-                  <button className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition">
-                    Add to Cart
-                  </button>
-                </div>
               </div>
-
-              {/* Product Info */}
-              <div className="p-4 text-center transition-transform duration-300 group-hover:-translate-y-1">
-                <h3 className="text-lg font-semibold mb-1">{product.name}</h3>
-                <p className="text-orange-500 mb-1">{product.category}</p>
-                <p className="text-gray-800 font-bold">{product.price} DZD</p>
+              <h3 className="font-medium text-gray-800 text-sm mt-2 mb-1">
+                {p.name}
+              </h3>
+              <p className="text-orange-600 font-bold mb-3">{p.price} DA</p>
+              <div className="mt-auto flex gap-2">
+                <button
+                  onClick={() => handleAddToCart(p.id)}
+                  className={`flex-1 py-1.5 rounded-md text-sm flex items-center justify-center gap-2 text-white transition-all duration-200 ${
+                    clickedButton === p.id
+                      ? "bg-orange-600 scale-95 shadow-lg"
+                      : "bg-orange-500 hover:bg-orange-600 hover:shadow-md"
+                  }`}
+                >
+                  <FaShoppingCart /> Add to Cart
+                </button>
+                <button
+                  onClick={() => handleViewProduct(p)}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 rounded-md text-sm flex items-center justify-center"
+                >
+                  <FaEye />
+                </button>
               </div>
             </div>
           ))}
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-center items-center mt-6 gap-4">
-          <button
-            onClick={handlePrevPage}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 disabled:bg-orange-200 disabled:text-white disabled:opacity-50 transition"
-          >
-            Previous
+        <div className="flex justify-center mt-8 gap-2">
+          <button className="px-3 py-1 border border-white bg-gray-100 rounded hover:bg-gray-200">
+            1
           </button>
-
-          <span className="px-3 py-2 rounded bg-white border border-white text-gray-800">
-            Page {currentPage} of {totalPages}
-          </span>
-
-          <button
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 disabled:bg-orange-200 disabled:text-white disabled:opacity-50 transition"
-          >
-            Next
+          <button className="px-3 py-1 border border-white bg-gray-100 rounded hover:bg-gray-200">
+            2
+          </button>
+          <button className="px-3 py-1 border border-white bg-gray-100 rounded hover:bg-gray-200">
+            3
           </button>
         </div>
-      </div>
+      </main>
 
-      {/* Quick View Modal */}
-      {quickViewProduct && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-auto p-4 transition-opacity duration-300">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md relative transform scale-95 animate-[fadeIn_0.3s_forwards]">
+      {/* Product Detail Zoom (no dark background) */}
+      {selectedProduct && (
+        <div
+          className="fixed inset-0 flex justify-center items-center z-50 bg-transparent"
+          onClick={closeModal}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-xl w-80 sm:w-[400px] transform scale-100 transition-all duration-300 hover:scale-105 p-5 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
-              className="absolute top-2 right-2 text-gray-700 font-bold text-xl"
-              onClick={() => setQuickViewProduct(null)}
+              onClick={closeModal}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
             >
-              ×
+              <FaTimes size={18} />
             </button>
             <img
-              src={quickViewProduct.image}
-              alt={quickViewProduct.name}
-              className="w-full h-64 object-cover mb-4 rounded"
+              src={selectedProduct.image}
+              alt={selectedProduct.name}
+              className="w-full h-52 object-cover rounded-lg mb-4"
             />
-            <h2 className="text-xl font-bold mb-2">{quickViewProduct.name}</h2>
-            <p className="text-orange-500 mb-2">{quickViewProduct.category}</p>
-            <p className="text-gray-800 font-bold mb-2">{quickViewProduct.price} DZD</p>
-            <p className="text-gray-600 mb-4">{quickViewProduct.description}</p>
-            <div className="flex items-center mb-4">
-              <span className="mr-2">Quantity:</span>
-              <input
-                type="number"
-                min="1"
-                value={quantity}
-                onChange={(e) => setQuantity(Number(e.target.value))}
-                className="border border-white rounded p-1 w-16 text-center focus:outline-none focus:ring-2 focus:ring-orange-300"
-              />
-            </div>
-            <button className="bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-600 w-full">
+            <h2 className="text-lg font-semibold text-gray-800 mb-2">
+              {selectedProduct.name}
+            </h2>
+            <p className="text-orange-600 font-bold mb-2">
+              {selectedProduct.price} DA
+            </p>
+            <p className="text-gray-600 text-sm mb-4">
+              Categoría:{" "}
+              <span className="font-medium">{selectedProduct.category}</span>
+            </p>
+            <button
+              onClick={() => {
+                handleAddToCart(selectedProduct.id);
+                closeModal();
+              }}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-md font-medium transition"
+            >
               Add to Cart
             </button>
           </div>
