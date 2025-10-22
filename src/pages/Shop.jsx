@@ -7,8 +7,10 @@ import {
   FaBars,
   FaTimes,
 } from "react-icons/fa";
+import { useCart } from "../context/CartContext";
 
 function Shop() {
+  const { addToCart } = useCart(); // ✅ use the cart context here
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortOrder, setSortOrder] = useState("A-Z");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -32,12 +34,11 @@ function Shop() {
     { id: 4, name: "Interruptor Doble", price: 700, category: "Interruptores", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
     { id: 5, name: "Toma Corriente", price: 900, category: "Accesorios", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
     { id: 6, name: "Bombilla LED 10W", price: 500, category: "Iluminación", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
-     { id: 7, name: "Interruptor Doble", price: 700, category: "Interruptores", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 7, name: "Interruptor Doble", price: 700, category: "Interruptores", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
     { id: 8, name: "Toma Corriente", price: 900, category: "Accesorios", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
     { id: 9, name: "Bombilla LED 10W", price: 500, category: "Iluminación", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
   ];
 
-  // Sticky sidebar
   useEffect(() => {
     const handleScroll = () => setIsSticky(window.scrollY > 100);
     window.addEventListener("scroll", handleScroll);
@@ -45,25 +46,22 @@ function Shop() {
   }, []);
 
   const filteredProducts = products
-    .filter(
-      (p) => selectedCategory === "All" || p.category === selectedCategory
-    )
+    .filter((p) => selectedCategory === "All" || p.category === selectedCategory)
     .sort((a, b) =>
-      sortOrder === "A-Z" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
+      sortOrder === "A-Z"
+        ? a.name.localeCompare(b.name)
+        : b.name.localeCompare(a.name)
     );
 
-  const handleAddToCart = (id) => {
-    setClickedButton(id);
+  // ✅ update to use CartContext
+  const handleAddToCart = (product) => {
+    addToCart(1); // adds 1 item to global cart count
+    setClickedButton(product.id);
     setTimeout(() => setClickedButton(null), 300);
   };
 
-  const handleViewProduct = (product) => {
-    setSelectedProduct(product);
-  };
-
-  const closeModal = () => {
-    setSelectedProduct(null);
-  };
+  const handleViewProduct = (product) => setSelectedProduct(product);
+  const closeModal = () => setSelectedProduct(null);
 
   return (
     <div className="flex min-h-screen bg-gray-50 relative">
@@ -105,7 +103,7 @@ function Shop() {
         </ul>
       </aside>
 
-      {/* Overlay for mobile */}
+      {/* Overlay (mobile) */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-30 z-30 lg:hidden"
@@ -113,32 +111,32 @@ function Shop() {
         ></div>
       )}
 
-      {/* Main Content */}
+      {/* Main */}
       <main className="flex-1 lg:w-3/4 xl:w-4/5 p-4 sm:p-6 lg:p-8">
         {/* Top controls */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <button
-            className="lg:hidden p-2 border border-white bg-gray-100 rounded flex items-center gap-2 text-gray-700"
+            className="lg:hidden p-2 border border-gray-200 bg-white rounded flex items-center gap-2 text-gray-700 shadow-sm"
             onClick={() => setSidebarOpen(true)}
           >
-            <FaBars /> Filters
+            <FaBars /> Filtros
           </button>
 
-          <div className="flex items-center border border-white bg-white rounded-md px-3 py-2 w-full sm:w-72">
+          <div className="flex items-center border border-gray-200 bg-white rounded-md px-3 py-2 w-full sm:w-72 shadow-sm">
             <FaSearch className="text-gray-400 mr-2" />
             <input
               type="text"
               placeholder="Buscar producto..."
-              className="w-full outline-none text-sm"
+              className="w-full outline-none text-sm text-gray-700"
             />
           </div>
 
-          <div className="flex items-center border border-white bg-white rounded-md px-3 py-2">
+          <div className="flex items-center border border-gray-200 bg-white rounded-md px-3 py-2 shadow-sm">
             <FaChevronDown className="text-gray-400 mr-2" />
             <select
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
-              className="bg-transparent outline-none text-sm"
+              className="bg-transparent outline-none text-sm text-gray-700"
             >
               <option value="A-Z">Nombre: A-Z</option>
               <option value="Z-A">Nombre: Z-A</option>
@@ -146,12 +144,12 @@ function Shop() {
           </div>
         </div>
 
-        {/* Products grid */}
+        {/* Products Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {filteredProducts.map((p) => (
             <div
               key={p.id}
-              className="bg-white border border-white rounded-lg shadow-sm hover:shadow-md transition p-3 flex flex-col"
+              className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition p-3 flex flex-col"
             >
               <div className="overflow-hidden rounded-md">
                 <img
@@ -166,7 +164,7 @@ function Shop() {
               <p className="text-orange-600 font-bold mb-3">{p.price} DA</p>
               <div className="mt-auto flex gap-2">
                 <button
-                  onClick={() => handleAddToCart(p.id)}
+                  onClick={() => handleAddToCart(p)} // ✅ passes product to cart
                   className={`flex-1 py-1.5 rounded-md text-sm flex items-center justify-center gap-2 text-white transition-all duration-200 ${
                     clickedButton === p.id
                       ? "bg-orange-600 scale-95 shadow-lg"
@@ -188,26 +186,25 @@ function Shop() {
 
         {/* Pagination */}
         <div className="flex justify-center mt-8 gap-2">
-          <button className="px-3 py-1 border border-white bg-gray-100 rounded hover:bg-gray-200">
-            1
-          </button>
-          <button className="px-3 py-1 border border-white bg-gray-100 rounded hover:bg-gray-200">
-            2
-          </button>
-          <button className="px-3 py-1 border border-white bg-gray-100 rounded hover:bg-gray-200">
-            3
-          </button>
+          {[1, 2, 3].map((n) => (
+            <button
+              key={n}
+              className="px-3 py-1 border border-gray-200 bg-white rounded hover:bg-gray-100 text-sm"
+            >
+              {n}
+            </button>
+          ))}
         </div>
       </main>
 
-      {/* Product Detail Zoom (no dark background) */}
+      {/* Product Modal */}
       {selectedProduct && (
         <div
           className="fixed inset-0 flex justify-center items-center z-50 bg-transparent"
           onClick={closeModal}
         >
           <div
-            className="bg-white rounded-2xl shadow-xl w-80 sm:w-[400px] transform scale-100 transition-all duration-300 hover:scale-105 p-5 relative"
+            className="bg-white rounded-2xl shadow-2xl w-80 sm:w-[400px] transform scale-100 transition-transform duration-300 hover:scale-105 p-5 relative border border-gray-100"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -233,7 +230,7 @@ function Shop() {
             </p>
             <button
               onClick={() => {
-                handleAddToCart(selectedProduct.id);
+                handleAddToCart(selectedProduct); // ✅ adds from modal too
                 closeModal();
               }}
               className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-md font-medium transition"

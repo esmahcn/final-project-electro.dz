@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { FaSearch, FaShoppingCart, FaUser, FaBars, FaTimes } from "react-icons/fa";
+import { useCart } from "../context/CartContext"; // ⬅️ add this
 
-const Navbar = ({ cartCount = 0 }) => {
+const Navbar = () => {
+  const { cartCount } = useCart(); // ⬅️ use global cart count
   const [openUserMenu, setOpenUserMenu] = useState(false);
   const [openMobileMenu, setOpenMobileMenu] = useState(false);
 
@@ -18,10 +20,8 @@ const Navbar = ({ cartCount = 0 }) => {
     <header className="shadow-md sticky top-0 z-50 bg-white">
       {/* Top Row: Logo + Search + Icons */}
       <div className="flex items-center justify-between px-4 md:px-8 py-3 border-b border-gray-200">
-        {/* Logo */}
         <div className="text-2xl font-bold text-orange-600">ElectroDZ ⚡</div>
 
-        {/* Search Bar (hidden on small screens) */}
         <div className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2 w-1/2">
           <FaSearch className="text-gray-500 mr-2" />
           <input
@@ -31,9 +31,7 @@ const Navbar = ({ cartCount = 0 }) => {
           />
         </div>
 
-        {/* Icons */}
         <div className="flex items-center gap-2 md:gap-4">
-          {/* Mobile menu button */}
           <button
             className="md:hidden p-2 text-gray-700 hover:text-orange-600"
             onClick={() => setOpenMobileMenu(!openMobileMenu)}
@@ -41,7 +39,7 @@ const Navbar = ({ cartCount = 0 }) => {
             {openMobileMenu ? <FaTimes size={20} /> : <FaBars size={20} />}
           </button>
 
-          {/* Cart with badge */}
+          {/* Cart */}
           <button className="relative w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition">
             <FaShoppingCart />
             {cartCount > 0 && (
@@ -77,7 +75,6 @@ const Navbar = ({ cartCount = 0 }) => {
 
       {/* Bottom Row: Menu */}
       <nav className="bg-orange-500 text-white text-sm font-medium relative">
-        {/* Desktop Menu */}
         <ul className="hidden md:flex justify-center gap-8 py-3">
           {menuItems.map((item) => (
             <li key={item.name}>
@@ -100,14 +97,11 @@ const Navbar = ({ cartCount = 0 }) => {
           }`}
           onClick={() => setOpenMobileMenu(false)}
         >
-          {/* Overlay */}
           <div className="absolute inset-0 bg-black/40"></div>
-
-          {/* Side Drawer (slide from right) */}
           <div
             className={`absolute top-0 right-0 w-64 h-full bg-orange-500 transform transition-transform duration-300 ease-in-out
               ${openMobileMenu ? "translate-x-0" : "translate-x-full"}`}
-            onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside menu
+            onClick={(e) => e.stopPropagation()}
           >
             <ul className="flex flex-col gap-4 py-8 px-6">
               {menuItems.map((item) => (
@@ -119,7 +113,7 @@ const Navbar = ({ cartCount = 0 }) => {
                         ? "text-gray-200 font-bold block py-2 text-lg"
                         : "hover:text-gray-200 block py-2 text-lg"
                     }
-                    onClick={() => setOpenMobileMenu(false)} // close menu on click
+                    onClick={() => setOpenMobileMenu(false)}
                   >
                     {item.name}
                   </NavLink>
