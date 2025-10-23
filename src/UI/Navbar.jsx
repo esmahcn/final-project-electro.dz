@@ -20,8 +20,10 @@ const Navbar = () => {
     <header className="shadow-md sticky top-0 z-50 bg-white">
       {/* Top Row: Logo + Search + Icons */}
       <div className="flex items-center justify-between px-4 md:px-8 py-3 border-b border-gray-200">
+        {/* Logo */}
         <div className="text-2xl font-bold text-orange-600">ElectroDZ ⚡</div>
 
+        {/* Search Bar */}
         <div className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2 w-1/2">
           <FaSearch className="text-gray-500 mr-2" />
           <input
@@ -31,7 +33,9 @@ const Navbar = () => {
           />
         </div>
 
+        {/* Icons */}
         <div className="flex items-center gap-2 md:gap-4">
+          {/* Mobile Menu Button */}
           <button
             className="md:hidden p-2 text-gray-700 hover:text-orange-600"
             onClick={() => setOpenMobileMenu(!openMobileMenu)}
@@ -48,56 +52,54 @@ const Navbar = () => {
               </span>
             )}
           </button>
-{/* User Menu */}
-<div className="relative" onBlur={() => setOpenUserMenu(false)} tabIndex={0}>
-  <button
-    onClick={() => setOpenUserMenu(!openUserMenu)}
-    className="relative flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition"
-  >
-    <FaUser />
-  </button>
 
-  {openUserMenu && (
-    <div
-      className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50"
-      onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
-    >
-      <ul className="text-gray-700 text-sm">
-        <li>
-          <Link
-            to="/login"
-            className="block px-4 py-2 hover:bg-orange-50 cursor-pointer"
-          >
-            Login
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/forgot-password"
-            className="block px-4 py-2 hover:bg-orange-50 cursor-pointer"
-            onClick={() => setOpenUserMenu(false)}
-          >
-            Forgot Password
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/register"
-            className="block px-4 py-2 hover:bg-orange-50 cursor-pointer"
-            onClick={() => setOpenUserMenu(false)}
-          >
-            Register
-          </Link>
-        </li>
-      </ul>
-    </div>
-  )}
-</div>
+          {/* User Menu */}
+          <div className="relative">
+            <button
+              onClick={() => setOpenUserMenu((prev) => !prev)}
+              className="relative flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition"
+            >
+              <FaUser />
+            </button>
 
+            {openUserMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50">
+                <ul className="text-gray-700 text-sm">
+                  <li>
+                    <Link
+                      to="/login"
+                      className="block px-4 py-2 hover:bg-orange-50"
+                      onClick={() => setOpenUserMenu(false)}
+                    >
+                      Login
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/forgot-password"
+                      className="block px-4 py-2 hover:bg-orange-50"
+                      onClick={() => setOpenUserMenu(false)}
+                    >
+                      Forgot Password
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/register"
+                      className="block px-4 py-2 hover:bg-orange-50"
+                      onClick={() => setOpenUserMenu(false)}
+                    >
+                      Register
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Bottom Row: Menu */}
+      {/* Bottom Row: Navigation Menu */}
       <nav className="bg-orange-500 text-white text-sm font-medium relative">
         <ul className="hidden md:flex justify-center gap-8 py-3">
           {menuItems.map((item) => (
