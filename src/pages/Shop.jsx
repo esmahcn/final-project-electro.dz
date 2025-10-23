@@ -8,14 +8,13 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
-import { useLocation, useNavigate } from "react-router-dom"; // ✅ added
+import { useLocation, useNavigate } from "react-router-dom";
 
 function Shop() {
   const { addToCart } = useCart();
   const location = useLocation();
   const navigate = useNavigate();
 
-  // ✅ Get category from URL
   const queryParams = new URLSearchParams(location.search);
   const initialCategory = queryParams.get("category") || "All";
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
@@ -26,54 +25,44 @@ function Shop() {
   const [clickedButton, setClickedButton] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  // ✅ English categories (same as your Categories page)
   const categories = [
     "All",
-    "Iluminación",
-    "Herramientas",
+    "Lighting",
+    "Tools",
     "Cables",
-    "Interruptores",
-    "Accesorios",
+    "Switches",
+    "Accessories",
   ];
 
   const products = [
-    { id: 1, name: "Cable de Cobre 10mm", price: 1500, category: "Cables", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
-    { id: 2, name: "Lámpara LED 20W", price: 800, category: "Iluminación", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
-    { id: 3, name: "Destornillador Eléctrico", price: 2300, category: "Herramientas", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
-    { id: 4, name: "Interruptor Doble", price: 700, category: "Interruptores", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
-    { id: 5, name: "Toma Corriente", price: 900, category: "Accesorios", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
-    { id: 6, name: "Bombilla LED 10W", price: 500, category: "Iluminación", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
-    { id: 7, name: "Interruptor Simple", price: 600, category: "Interruptores", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
-    { id: 8, name: "Enchufe Industrial", price: 1800, category: "Accesorios", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
-    { id: 9, name: "Luz de Pared LED", price: 950, category: "Iluminación", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 1, name: "Copper Cable 10mm", price: 1500, category: "Cables", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 2, name: "LED Lamp 20W", price: 800, category: "Lighting", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 3, name: "Electric Screwdriver", price: 2300, category: "Tools", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 4, name: "Double Switch", price: 700, category: "Switches", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 5, name: "Wall Socket", price: 900, category: "Accessories", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 6, name: "LED Bulb 10W", price: 500, category: "Lighting", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 7, name: "Single Switch", price: 600, category: "Switches", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 8, name: "Industrial Plug", price: 1800, category: "Accessories", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 9, name: "LED Wall Light", price: 950, category: "Lighting", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
   ];
 
-  // ✅ When URL changes → update selected category
+  // ✅ Update selectedCategory when URL changes
   useEffect(() => {
     const categoryFromURL = queryParams.get("category");
-    if (categoryFromURL) {
-      setSelectedCategory(categoryFromURL);
-    } else {
-      setSelectedCategory("All");
-    }
+    if (categoryFromURL) setSelectedCategory(categoryFromURL);
+    else setSelectedCategory("All");
   }, [location.search]);
 
-  // ✅ Handle scroll sticky sidebar
   useEffect(() => {
     const handleScroll = () => setIsSticky(window.scrollY > 100);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // ✅ Filter & sort products
   const filteredProducts = products
-    .filter(
-      (p) => selectedCategory === "All" || p.category === selectedCategory
-    )
-    .sort((a, b) =>
-      sortOrder === "A-Z"
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name)
-    );
+    .filter(p => selectedCategory === "All" || p.category === selectedCategory)
+    .sort((a, b) => sortOrder === "A-Z" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
 
   const handleAddToCart = (product) => {
     addToCart(1);
@@ -84,11 +73,9 @@ function Shop() {
   const handleViewProduct = (product) => setSelectedProduct(product);
   const closeModal = () => setSelectedProduct(null);
 
-  // ✅ Click category → update both UI + URL
   const handleCategoryClick = (cat) => {
     setSelectedCategory(cat);
     setSidebarOpen(false);
-
     if (cat === "All") navigate("/shop");
     else navigate(`/shop?category=${encodeURIComponent(cat)}`);
   };
@@ -114,7 +101,7 @@ function Shop() {
           Categories
         </h2>
         <ul className="space-y-2">
-          {categories.map((cat) => (
+          {categories.map(cat => (
             <li
               key={cat}
               onClick={() => handleCategoryClick(cat)}
@@ -130,7 +117,7 @@ function Shop() {
         </ul>
       </aside>
 
-      {/* Overlay (mobile) */}
+      {/* Overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-30 z-30 lg:hidden"
@@ -138,9 +125,9 @@ function Shop() {
         ></div>
       )}
 
-      {/* Main Content */}
+      {/* Main */}
       <main className="flex-1 lg:w-3/4 xl:w-4/5 p-4 sm:p-6 lg:p-8">
-        {/* Top Controls */}
+        {/* Controls */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <button
             className="lg:hidden p-2 border border-gray-200 bg-white rounded flex items-center gap-2 text-gray-700 shadow-sm"
@@ -173,7 +160,7 @@ function Shop() {
 
         {/* Products Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {filteredProducts.map((p) => (
+          {filteredProducts.map(p => (
             <div
               key={p.id}
               className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition p-3 flex flex-col"
@@ -185,9 +172,7 @@ function Shop() {
                   className="w-full h-36 object-cover transform transition-transform duration-300 hover:scale-105"
                 />
               </div>
-              <h3 className="font-medium text-gray-800 text-sm mt-2 mb-1">
-                {p.name}
-              </h3>
+              <h3 className="font-medium text-gray-800 text-sm mt-2 mb-1">{p.name}</h3>
               <p className="text-orange-600 font-bold mb-3">{p.price} DA</p>
               <div className="mt-auto flex gap-2">
                 <button
@@ -213,7 +198,7 @@ function Shop() {
 
         {/* Pagination */}
         <div className="flex justify-center mt-8 gap-2">
-          {[1, 2, 3].map((n) => (
+          {[1, 2, 3].map(n => (
             <button
               key={n}
               className="px-3 py-1 border border-gray-200 bg-white rounded hover:bg-gray-100 text-sm"
@@ -245,21 +230,13 @@ function Shop() {
               alt={selectedProduct.name}
               className="w-full h-52 object-cover rounded-lg mb-4"
             />
-            <h2 className="text-lg font-semibold text-gray-800 mb-2">
-              {selectedProduct.name}
-            </h2>
-            <p className="text-orange-600 font-bold mb-2">
-              {selectedProduct.price} DA
-            </p>
+            <h2 className="text-lg font-semibold text-gray-800 mb-2">{selectedProduct.name}</h2>
+            <p className="text-orange-600 font-bold mb-2">{selectedProduct.price} DA</p>
             <p className="text-gray-600 text-sm mb-4">
-              Category:{" "}
-              <span className="font-medium">{selectedProduct.category}</span>
+              Category: <span className="font-medium">{selectedProduct.category}</span>
             </p>
             <button
-              onClick={() => {
-                handleAddToCart(selectedProduct);
-                closeModal();
-              }}
+              onClick={() => { handleAddToCart(selectedProduct); closeModal(); }}
               className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-md font-medium transition"
             >
               Add to Cart
