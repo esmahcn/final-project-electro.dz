@@ -12,7 +12,7 @@ function Contact() {
   return (
     <div className="bg-white">
       {/* 🔹 Header Section */}
-      <section className="bg-white text-gray-800 py-16 text-center shadow-sm border-b border-gray-100">
+      <section className="bg-gradient-to-r from-orange-50 via-white to-orange-50 py-16 text-center border-b border-gray-200">
         <h1 className="text-4xl font-extrabold mb-3 uppercase tracking-wide text-orange-500">
           Contact Us
         </h1>

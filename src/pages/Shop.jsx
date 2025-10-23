@@ -8,10 +8,18 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
+import { useLocation, useNavigate } from "react-router-dom"; // ✅ added
 
 function Shop() {
-  const { addToCart } = useCart(); // ✅ use the cart context here
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const { addToCart } = useCart();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // ✅ Get category from URL
+  const queryParams = new URLSearchParams(location.search);
+  const initialCategory = queryParams.get("category") || "All";
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+
   const [sortOrder, setSortOrder] = useState("A-Z");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
@@ -34,34 +42,56 @@ function Shop() {
     { id: 4, name: "Interruptor Doble", price: 700, category: "Interruptores", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
     { id: 5, name: "Toma Corriente", price: 900, category: "Accesorios", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
     { id: 6, name: "Bombilla LED 10W", price: 500, category: "Iluminación", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
-    { id: 7, name: "Interruptor Doble", price: 700, category: "Interruptores", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
-    { id: 8, name: "Toma Corriente", price: 900, category: "Accesorios", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
-    { id: 9, name: "Bombilla LED 10W", price: 500, category: "Iluminación", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 7, name: "Interruptor Simple", price: 600, category: "Interruptores", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 8, name: "Enchufe Industrial", price: 1800, category: "Accesorios", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 9, name: "Luz de Pared LED", price: 950, category: "Iluminación", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
   ];
 
+  // ✅ When URL changes → update selected category
+  useEffect(() => {
+    const categoryFromURL = queryParams.get("category");
+    if (categoryFromURL) {
+      setSelectedCategory(categoryFromURL);
+    } else {
+      setSelectedCategory("All");
+    }
+  }, [location.search]);
+
+  // ✅ Handle scroll sticky sidebar
   useEffect(() => {
     const handleScroll = () => setIsSticky(window.scrollY > 100);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // ✅ Filter & sort products
   const filteredProducts = products
-    .filter((p) => selectedCategory === "All" || p.category === selectedCategory)
+    .filter(
+      (p) => selectedCategory === "All" || p.category === selectedCategory
+    )
     .sort((a, b) =>
       sortOrder === "A-Z"
         ? a.name.localeCompare(b.name)
         : b.name.localeCompare(a.name)
     );
 
-  // ✅ update to use CartContext
   const handleAddToCart = (product) => {
-    addToCart(1); // adds 1 item to global cart count
+    addToCart(1);
     setClickedButton(product.id);
     setTimeout(() => setClickedButton(null), 300);
   };
 
   const handleViewProduct = (product) => setSelectedProduct(product);
   const closeModal = () => setSelectedProduct(null);
+
+  // ✅ Click category → update both UI + URL
+  const handleCategoryClick = (cat) => {
+    setSelectedCategory(cat);
+    setSidebarOpen(false);
+
+    if (cat === "All") navigate("/shop");
+    else navigate(`/shop?category=${encodeURIComponent(cat)}`);
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-50 relative">
@@ -74,23 +104,20 @@ function Shop() {
         }`}
       >
         <div className="flex justify-between items-center lg:hidden mb-4">
-          <h2 className="text-lg font-semibold text-gray-700">Categorías</h2>
+          <h2 className="text-lg font-semibold text-gray-700">Categories</h2>
           <button onClick={() => setSidebarOpen(false)} className="text-gray-600">
             <FaTimes size={20} />
           </button>
         </div>
 
         <h2 className="hidden lg:block text-lg font-semibold text-gray-700 mb-4">
-          Categorías
+          Categories
         </h2>
         <ul className="space-y-2">
           {categories.map((cat) => (
             <li
               key={cat}
-              onClick={() => {
-                setSelectedCategory(cat);
-                setSidebarOpen(false);
-              }}
+              onClick={() => handleCategoryClick(cat)}
               className={`cursor-pointer py-2 px-3 rounded-md text-sm font-medium transition-all ${
                 selectedCategory === cat
                   ? "bg-white border-l-4 border-orange-500 text-orange-600"
@@ -111,22 +138,22 @@ function Shop() {
         ></div>
       )}
 
-      {/* Main */}
+      {/* Main Content */}
       <main className="flex-1 lg:w-3/4 xl:w-4/5 p-4 sm:p-6 lg:p-8">
-        {/* Top controls */}
+        {/* Top Controls */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <button
             className="lg:hidden p-2 border border-gray-200 bg-white rounded flex items-center gap-2 text-gray-700 shadow-sm"
             onClick={() => setSidebarOpen(true)}
           >
-            <FaBars /> Filtros
+            <FaBars /> Filters
           </button>
 
           <div className="flex items-center border border-gray-200 bg-white rounded-md px-3 py-2 w-full sm:w-72 shadow-sm">
             <FaSearch className="text-gray-400 mr-2" />
             <input
               type="text"
-              placeholder="Buscar producto..."
+              placeholder="Search product..."
               className="w-full outline-none text-sm text-gray-700"
             />
           </div>
@@ -138,8 +165,8 @@ function Shop() {
               onChange={(e) => setSortOrder(e.target.value)}
               className="bg-transparent outline-none text-sm text-gray-700"
             >
-              <option value="A-Z">Nombre: A-Z</option>
-              <option value="Z-A">Nombre: Z-A</option>
+              <option value="A-Z">Name: A-Z</option>
+              <option value="Z-A">Name: Z-A</option>
             </select>
           </div>
         </div>
@@ -164,7 +191,7 @@ function Shop() {
               <p className="text-orange-600 font-bold mb-3">{p.price} DA</p>
               <div className="mt-auto flex gap-2">
                 <button
-                  onClick={() => handleAddToCart(p)} // ✅ passes product to cart
+                  onClick={() => handleAddToCart(p)}
                   className={`flex-1 py-1.5 rounded-md text-sm flex items-center justify-center gap-2 text-white transition-all duration-200 ${
                     clickedButton === p.id
                       ? "bg-orange-600 scale-95 shadow-lg"
@@ -225,12 +252,12 @@ function Shop() {
               {selectedProduct.price} DA
             </p>
             <p className="text-gray-600 text-sm mb-4">
-              Categoría:{" "}
+              Category:{" "}
               <span className="font-medium">{selectedProduct.category}</span>
             </p>
             <button
               onClick={() => {
-                handleAddToCart(selectedProduct); // ✅ adds from modal too
+                handleAddToCart(selectedProduct);
                 closeModal();
               }}
               className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-md font-medium transition"
