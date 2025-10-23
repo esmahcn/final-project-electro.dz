@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { FaSearch, FaShoppingCart, FaUser, FaBars, FaTimes } from "react-icons/fa";
-import { useCart } from "../context/CartContext"; // ⬅️ add this
+import { useCart } from "../context/CartContext";
 
 const Navbar = () => {
-  const { cartCount } = useCart(); // ⬅️ use global cart count
+  const { cartCount } = useCart();
   const [openUserMenu, setOpenUserMenu] = useState(false);
   const [openMobileMenu, setOpenMobileMenu] = useState(false);
 
@@ -48,28 +48,52 @@ const Navbar = () => {
               </span>
             )}
           </button>
+{/* User Menu */}
+<div className="relative" onBlur={() => setOpenUserMenu(false)} tabIndex={0}>
+  <button
+    onClick={() => setOpenUserMenu(!openUserMenu)}
+    className="relative flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition"
+  >
+    <FaUser />
+  </button>
 
-          {/* User Menu */}
-          <div className="relative">
-            <button
-              onClick={() => setOpenUserMenu(!openUserMenu)}
-              className="relative flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition"
-            >
-              <FaUser />
-            </button>
+  {openUserMenu && (
+    <div
+      className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50"
+      onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+    >
+      <ul className="text-gray-700 text-sm">
+        <li>
+          <Link
+            to="/login"
+            className="block px-4 py-2 hover:bg-orange-50 cursor-pointer"
+          >
+            Login
+          </Link>
+        </li>
+        <li>
+          <Link
+            to="/forgot-password"
+            className="block px-4 py-2 hover:bg-orange-50 cursor-pointer"
+            onClick={() => setOpenUserMenu(false)}
+          >
+            Forgot Password
+          </Link>
+        </li>
+        <li>
+          <Link
+            to="/register"
+            className="block px-4 py-2 hover:bg-orange-50 cursor-pointer"
+            onClick={() => setOpenUserMenu(false)}
+          >
+            Register
+          </Link>
+        </li>
+      </ul>
+    </div>
+  )}
+</div>
 
-            {openUserMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50">
-                <ul className="text-gray-700 text-sm">
-                  <li className="px-4 py-2 hover:bg-orange-50 cursor-pointer">My Account</li>
-                  <li className="px-4 py-2 hover:bg-orange-50 cursor-pointer">Orders</li>
-                  <li className="px-4 py-2 hover:bg-orange-50 cursor-pointer">Wishlist</li>
-                  <li className="border-t my-1"></li>
-                  <li className="px-4 py-2 text-red-500 hover:bg-orange-50 cursor-pointer">Logout</li>
-                </ul>
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
@@ -99,8 +123,9 @@ const Navbar = () => {
         >
           <div className="absolute inset-0 bg-black/40"></div>
           <div
-            className={`absolute top-0 right-0 w-64 h-full bg-orange-500 transform transition-transform duration-300 ease-in-out
-              ${openMobileMenu ? "translate-x-0" : "translate-x-full"}`}
+            className={`absolute top-0 right-0 w-64 h-full bg-orange-500 transform transition-transform duration-300 ease-in-out ${
+              openMobileMenu ? "translate-x-0" : "translate-x-full"
+            }`}
             onClick={(e) => e.stopPropagation()}
           >
             <ul className="flex flex-col gap-4 py-8 px-6">
