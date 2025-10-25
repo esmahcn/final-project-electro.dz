@@ -1,8 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { FaPhoneAlt, FaEnvelope, FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
+import {
+  FaPhoneAlt,
+  FaEnvelope,
+  FaFacebookF,
+  FaInstagram,
+  FaLinkedinIn,
+} from "react-icons/fa";
 
 function Footer() {
-  const [visibleSections, setVisibleSections] = useState([false, false, false, false, false, false]);
+  const [visibleSections, setVisibleSections] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
 
   useEffect(() => {
     const onScroll = () => {
@@ -30,7 +43,11 @@ function Footer() {
   }, []);
 
   const fadeUp = (index) =>
-    `transition-all duration-700 ${visibleSections[index] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`;
+    `transition-all duration-700 ${
+      visibleSections[index]
+        ? "opacity-100 translate-y-0"
+        : "opacity-0 translate-y-6"
+    }`;
 
   return (
     <footer
@@ -38,42 +55,31 @@ function Footer() {
       className="bg-gradient-to-t from-gray-900 via-gray-800 to-gray-900 text-white py-12 px-6 relative"
     >
       {/* Top description with animated orbiting dots */}
-      <div className={`relative text-center mb-10 max-w-2xl mx-auto px-4 ${fadeUp(0)}`}>
+      <div
+        className={`relative text-center mb-10 max-w-2xl mx-auto px-4 ${fadeUp(
+          0
+        )}`}
+      >
         <p className="text-gray-300 relative z-10">
-          Committed to fully satisfying our customers' needs based on respect, warmth, and professionalism.
+          Committed to fully satisfying our customers' needs based on respect,
+          warmth, and professionalism.
         </p>
 
-        {/* Orbiting decorative dots */}
-    {/* Orbiting decorative “particle” dots */}
-<span className="absolute w-1.5 h-1.5 bg-blue-500 rounded-full top-2 left-8 animate-orbit-blue"></span>
-<span className="absolute w-2 h-2 bg-pink-500 rounded-full top-6 right-16 animate-orbit-pink"></span>
-<span className="absolute w-1 h-1 bg-yellow-400 rounded-full top-10 left-1/3 animate-orbit-yellow"></span>
-<span className="absolute w-1.5 h-1.5 bg-blue-400 rounded-full top-4 left-1/2 animate-orbit-blue"></span>
-<span className="absolute w-2 h-2 bg-pink-300 rounded-full top-1 right-10 animate-orbit-pink"></span>
+        {/* Orbiting decorative “particle” dots */}
+        <span className="absolute w-1.5 h-1.5 bg-blue-500 rounded-full top-2 left-8 animate-orbit-blue"></span>
+        <span className="absolute w-2 h-2 bg-pink-500 rounded-full top-6 right-16 animate-orbit-pink"></span>
+        <span className="absolute w-1 h-1 bg-yellow-400 rounded-full top-10 left-1/3 animate-orbit-yellow"></span>
+        <span className="absolute w-1.5 h-1.5 bg-blue-400 rounded-full top-4 left-1/2 animate-orbit-blue"></span>
+        <span className="absolute w-2 h-2 bg-pink-300 rounded-full top-1 right-10 animate-orbit-pink"></span>
       </div>
+
       {/* Footer sections */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center sm:text-left mb-10">
         {/* About Us */}
         <div className={fadeUp(1)}>
           <h3 className="font-bold text-lg mb-4">ABOUT US</h3>
           <ul className="space-y-2 text-gray-400">
-            {["Our Commitment", "Contact Us", "Work with Us"].map((item, idx) => (
-              <li
-                key={idx}
-                className="relative cursor-pointer text-gray-400 group hover:text-white transition-colors"
-              >
-                {item}
-                <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-white transition-all duration-300 group-hover:w-full"></span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Important Information */}
-        <div className={fadeUp(2)}>
-          <h3 className="font-bold text-lg mb-4">IMPORTANT INFORMATION</h3>
-          <ul className="space-y-2 text-gray-400">
-            {["Frequently Asked Questions", "Terms and Conditions", "Privacy and Cookie Policy"].map(
+            {["Our Commitment", "Contact Us", "Work with Us"].map(
               (item, idx) => (
                 <li
                   key={idx}
@@ -87,23 +93,44 @@ function Footer() {
           </ul>
         </div>
 
+        {/* Important Information */}
+        <div className={fadeUp(2)}>
+          <h3 className="font-bold text-lg mb-4">IMPORTANT INFORMATION</h3>
+          <ul className="space-y-2 text-gray-400">
+            {[
+              "Frequently Asked Questions",
+              "Terms and Conditions",
+              "Privacy and Cookie Policy",
+            ].map((item, idx) => (
+              <li
+                key={idx}
+                className="relative cursor-pointer text-gray-400 group hover:text-white transition-colors"
+              >
+                {item}
+                <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-white transition-all duration-300 group-hover:w-full"></span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         {/* Contact */}
         <div className={fadeUp(3)}>
           <h3 className="font-bold text-lg mb-4">CONTACT</h3>
-          <p className="text-gray-400">Int. Rafael Amato 1050 (Bulnes & Colegio Emaús)</p>
-          <p className="text-gray-400">El Palomar - B1685BYB</p>
+          <p className="text-gray-400">El Hamiz, Algiers, Algeria</p>
           <p className="flex items-center justify-center sm:justify-start mt-2 text-gray-400">
-            <FaPhoneAlt className="mr-2" /> +54 11 5980-4140
+            <FaPhoneAlt className="mr-2" /> 0798 37 91 64
           </p>
           <p className="flex items-center justify-center sm:justify-start mt-1 text-gray-400">
-            <FaEnvelope className="mr-2" /> sales@electricidadnico.com.ar
+            <FaEnvelope className="mr-2" /> esmahacene@gmail.com
           </p>
         </div>
 
         {/* Newsletter & Social */}
         <div className={fadeUp(4)}>
           <h3 className="font-bold text-lg mb-4">NEWSLETTER</h3>
-          <p className="text-gray-400 mb-4">Subscribe to get our latest updates and offers.</p>
+          <p className="text-gray-400 mb-4">
+            Subscribe to get our latest updates and offers.
+          </p>
           <div className="flex flex-col sm:flex-row justify-center sm:justify-start mb-4 gap-2">
             <input
               type="email"

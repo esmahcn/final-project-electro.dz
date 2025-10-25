@@ -65,11 +65,10 @@ function Shop() {
     .sort((a, b) => sortOrder === "A-Z" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
 
   const handleAddToCart = (product) => {
-    addToCart(1);
-    setClickedButton(product.id);
-    setTimeout(() => setClickedButton(null), 300);
-  };
-
+  addToCart(product); // pass full product object
+  setClickedButton(product.id);
+  setTimeout(() => setClickedButton(null), 300);
+};
   const handleViewProduct = (product) => setSelectedProduct(product);
   const closeModal = () => setSelectedProduct(null);
 

@@ -7,26 +7,45 @@ export const CartProvider = ({ children }) => {
   const [cartCount, setCartCount] = useState(0);
   const [cartItems, setCartItems] = useState([]);
 
-  // Add item to cart
+  // ✅ Add item to cart (increase quantity if exists)
   const addToCart = (product) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
       if (existingItem) {
-        // Increase quantity if it already exists
         return prevItems.map((item) =>
           item.id === product.id ? { ...item, qty: item.qty + 1 } : item
         );
       } else {
-        // Add new product
         return [...prevItems, { ...product, qty: 1 }];
       }
     });
 
-    // Update total count
     setCartCount((prev) => prev + 1);
   };
 
-  // Remove item
+  // ✅ Increase quantity
+  const increaseQuantity = (id) => {
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, qty: item.qty + 1 } : item
+      )
+    );
+    setCartCount((prev) => prev + 1);
+  };
+
+  // ✅ Decrease quantity
+  const decreaseQuantity = (id) => {
+    setCartItems((prev) =>
+      prev
+        .map((item) =>
+          item.id === id ? { ...item, qty: Math.max(1, item.qty - 1) } : item
+        )
+        .filter((item) => item.qty > 0)
+    );
+    setCartCount((prev) => (prev > 0 ? prev - 1 : 0));
+  };
+
+  // ✅ Remove item
   const removeFromCart = (id) => {
     setCartItems((prevItems) => {
       const itemToRemove = prevItems.find((item) => item.id === id);
@@ -36,7 +55,7 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  // Clear cart
+  // ✅ Clear all cart
   const resetCart = () => {
     setCartItems([]);
     setCartCount(0);
@@ -50,6 +69,8 @@ export const CartProvider = ({ children }) => {
         addToCart,
         removeFromCart,
         resetCart,
+        increaseQuantity,
+        decreaseQuantity,
       }}
     >
       {children}

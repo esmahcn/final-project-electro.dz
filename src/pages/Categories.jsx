@@ -9,27 +9,27 @@ function Categories() {
   const categories = [
     {
       name: "Lighting",
-      image: "/img/light.jpg",
+      image: "/images/Electricidad Nico - Ventas online_files/lightbulb-3489395_640.jpg",
       description: "Energy-efficient lighting for home and industry.",
     },
     {
       name: "Tools",
-      image: "/img/tools.jpg",
+      image: "/images/Electricidad Nico - Ventas online_files/tools.jpg",
       description: "High-quality tools for every electrical project.",
     },
     {
       name: "Cables",
-      image: "/img/cables.jpg",
+      image: "/images/Electricidad Nico - Ventas online_files/cables.jpg",
       description: "Durable and safe cables for all your installations.",
     },
     {
       name: "Switches",
-      image: "/img/switches.jpg",
+      image: "/images/Electricidad Nico - Ventas online_files/switches.jpg",
       description: "Reliable switches and control devices.",
     },
     {
       name: "Accessories",
-      image: "/img/accessories.jpg",
+      image: "/images/Electricidad Nico - Ventas online_files/accessoires.jpg",
       description: "All accessories you need to complete your setup.",
     },
   ];
