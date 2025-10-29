@@ -1,7 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaEnvelope, FaLock } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setMessage("✅ Login successful!");
+        console.log("User logged in:", data);
+        setTimeout(() => navigate("/"), 1000); // Redirect to Home after 1 second
+      } else {
+        setMessage(data.message || "❌ Invalid credentials");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setMessage("⚠️ Server error. Please try again later.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
       {/* Left Image Section */}
@@ -20,7 +50,7 @@ function Login() {
             Welcome Back
           </h1>
 
-          <form className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
             <div>
               <label className="block text-gray-700 font-medium mb-1">
@@ -32,6 +62,9 @@ function Login() {
                   type="email"
                   placeholder="Enter your email"
                   className="w-full outline-none"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
               </div>
             </div>
@@ -47,6 +80,9 @@ function Login() {
                   type="password"
                   placeholder="Enter your password"
                   className="w-full outline-none"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
               </div>
             </div>
@@ -68,6 +104,11 @@ function Login() {
             >
               Login
             </button>
+
+            {/* Feedback Message */}
+            {message && (
+              <p className="text-center text-sm mt-3 text-gray-700">{message}</p>
+            )}
 
             {/* Link to Register */}
             <p className="text-center text-gray-600 text-sm mt-4">

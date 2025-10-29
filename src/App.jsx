@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./UI/Navbar";
 import Footer from "./UI/Footer";
 import Home from "./pages/Home";
@@ -15,29 +15,41 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import ThankYou from "./pages/ThankYou";
 
+function Layout({ children }) {
+  const location = useLocation();
+  const hideLayout =
+    location.pathname === "/login" ||
+    location.pathname === "/register" ||
+    location.pathname === "/forgot-password";
+
+  return (
+    <div className="font-sans flex flex-col min-h-screen">
+      {!hideLayout && <Navbar />}
+      <main className="flex-grow">{children}</main>
+      {!hideLayout && <Footer />}
+    </div>
+  );
+}
+
 function App() {
   return (
     <Router>
       <CartProvider>
-        <div className="font-sans flex flex-col min-h-screen">
-          <Navbar />
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/categories" element={<Categories />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-               <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/thankyou" element={<ThankYou />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/thankyou" element={<ThankYou />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+          </Routes>
+        </Layout>
       </CartProvider>
     </Router>
   );
