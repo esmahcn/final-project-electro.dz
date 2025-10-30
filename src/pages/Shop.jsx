@@ -6,9 +6,6 @@ import {
   FaEye,
   FaBars,
   FaTimes,
-  FaEdit,
-  FaTrash,
-  FaPlus,
 } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -21,76 +18,36 @@ function Shop() {
   const queryParams = new URLSearchParams(location.search);
   const initialCategory = queryParams.get("category") || "All";
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+
   const [sortOrder, setSortOrder] = useState("A-Z");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
   const [clickedButton, setClickedButton] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // ✅ New states for backend
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [form, setForm] = useState({ name: "", price: "", category: "Lighting", image: "" });
+  // ✅ English categories (same as your Categories page)
+  const categories = [
+    "All",
+    "Lighting",
+    "Tools",
+    "Cables",
+    "Switches",
+    "Accessories",
+  ];
 
-  const categories = ["All", "Lighting", "Tools", "Cables", "Switches", "Accessories"];
+  const products = [
+    { id: 1, name: "Copper Cable 10mm", price: 1500, category: "Cables", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 2, name: "LED Lamp 20W", price: 800, category: "Lighting", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 3, name: "Electric Screwdriver", price: 2300, category: "Tools", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 4, name: "Double Switch", price: 700, category: "Switches", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 5, name: "Wall Socket", price: 900, category: "Accessories", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 6, name: "LED Bulb 10W", price: 500, category: "Lighting", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 7, name: "Single Switch", price: 600, category: "Switches", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 8, name: "Industrial Plug", price: 1800, category: "Accessories", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+    { id: 9, name: "LED Wall Light", price: 950, category: "Lighting", image: "/images/Electricidad Nico - Ventas online_files/595708.jpg" },
+  ];
 
-  // ✅ Fetch products from backend
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("http://localhost:5000/api/products");
-      const data = await res.json();
-      setProducts(data);
-    } catch (err) {
-      console.error("Error fetching products:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ✅ Add or Update product
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const url = editingProduct
-      ? `http://localhost:5000/api/products/${editingProduct._id}`
-      : "http://localhost:5000/api/products";
-    const method = editingProduct ? "PUT" : "POST";
-
-    try {
-      await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      await fetchProducts();
-      setForm({ name: "", price: "", category: "Lighting", image: "" });
-      setEditingProduct(null);
-    } catch (error) {
-      console.error("Error saving product:", error);
-    }
-  };
-
-  // ✅ Delete product
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete this product?")) return;
-    try {
-      await fetch(`http://localhost:5000/api/products/${id}`, { method: "DELETE" });
-      fetchProducts();
-    } catch (err) {
-      console.error("Error deleting product:", err);
-    }
-  };
-
-  const handleEdit = (p) => {
-    setEditingProduct(p);
-    setForm({ name: p.name, price: p.price, category: p.category, image: p.image });
-  };
-
+  // ✅ Update selectedCategory when URL changes
   useEffect(() => {
     const categoryFromURL = queryParams.get("category");
     if (categoryFromURL) setSelectedCategory(categoryFromURL);
@@ -104,17 +61,14 @@ function Shop() {
   }, []);
 
   const filteredProducts = products
-    .filter((p) => selectedCategory === "All" || p.category === selectedCategory)
-    .sort((a, b) =>
-      sortOrder === "A-Z" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
-    );
+    .filter(p => selectedCategory === "All" || p.category === selectedCategory)
+    .sort((a, b) => sortOrder === "A-Z" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
 
   const handleAddToCart = (product) => {
-    addToCart(product);
-    setClickedButton(product._id);
-    setTimeout(() => setClickedButton(null), 300);
-  };
-
+  addToCart(product); // pass full product object
+  setClickedButton(product.id);
+  setTimeout(() => setClickedButton(null), 300);
+};
   const handleViewProduct = (product) => setSelectedProduct(product);
   const closeModal = () => setSelectedProduct(null);
 
@@ -146,7 +100,7 @@ function Shop() {
           Categories
         </h2>
         <ul className="space-y-2">
-          {categories.map((cat) => (
+          {categories.map(cat => (
             <li
               key={cat}
               onClick={() => handleCategoryClick(cat)}
@@ -162,70 +116,16 @@ function Shop() {
         </ul>
       </aside>
 
+      {/* Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-30 z-30 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        ></div>
+      )}
+
       {/* Main */}
       <main className="flex-1 lg:w-3/4 xl:w-4/5 p-4 sm:p-6 lg:p-8">
-        {/* ✅ Add Product Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-6"
-        >
-          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-            <FaPlus /> {editingProduct ? "Edit Product" : "Add New Product"}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <input
-              type="text"
-              placeholder="Name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="border p-2 rounded-md text-sm"
-              required
-            />
-            <input
-              type="number"
-              placeholder="Price (DA)"
-              value={form.price}
-              onChange={(e) => setForm({ ...form, price: e.target.value })}
-              className="border p-2 rounded-md text-sm"
-              required
-            />
-            <select
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-              className="border p-2 rounded-md text-sm"
-            >
-              {categories.slice(1).map((cat) => (
-                <option key={cat}>{cat}</option>
-              ))}
-            </select>
-            <input
-              type="text"
-              placeholder="Image URL"
-              value={form.image}
-              onChange={(e) => setForm({ ...form, image: e.target.value })}
-              className="border p-2 rounded-md text-sm"
-            />
-          </div>
-          <button
-            type="submit"
-            className="mt-3 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium"
-          >
-            {editingProduct ? "Update" : "Add"}
-          </button>
-          {editingProduct && (
-            <button
-              type="button"
-              onClick={() => {
-                setEditingProduct(null);
-                setForm({ name: "", price: "", category: "Lighting", image: "" });
-              }}
-              className="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md text-sm"
-            >
-              Cancel
-            </button>
-          )}
-        </form>
-
         {/* Controls */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <button
@@ -258,55 +158,91 @@ function Shop() {
         </div>
 
         {/* Products Grid */}
-        {loading ? (
-          <p className="text-gray-500">Loading products...</p>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredProducts.map((p) => (
-              <div
-                key={p._id}
-                className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition p-3 flex flex-col"
-              >
-                <div className="overflow-hidden rounded-md">
-                  <img
-                    src={p.image}
-                    alt={p.name}
-                    className="w-full h-36 object-cover transform transition-transform duration-300 hover:scale-105"
-                  />
-                </div>
-                <h3 className="font-medium text-gray-800 text-sm mt-2 mb-1">
-                  {p.name}
-                </h3>
-                <p className="text-orange-600 font-bold mb-3">{p.price} DA</p>
-                <div className="mt-auto flex gap-2">
-                  <button
-                    onClick={() => handleAddToCart(p)}
-                    className={`flex-1 py-1.5 rounded-md text-sm flex items-center justify-center gap-2 text-white transition-all duration-200 ${
-                      clickedButton === p._id
-                        ? "bg-orange-600 scale-95 shadow-lg"
-                        : "bg-orange-500 hover:bg-orange-600 hover:shadow-md"
-                    }`}
-                  >
-                    <FaShoppingCart /> Add
-                  </button>
-                  <button
-                    onClick={() => handleEdit(p)}
-                    className="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 px-2 rounded-md text-sm"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(p._id)}
-                    className="bg-red-100 hover:bg-red-200 text-red-600 px-2 rounded-md text-sm"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          {filteredProducts.map(p => (
+            <div
+              key={p.id}
+              className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition p-3 flex flex-col"
+            >
+              <div className="overflow-hidden rounded-md">
+                <img
+                  src={p.image}
+                  alt={p.name}
+                  className="w-full h-36 object-cover transform transition-transform duration-300 hover:scale-105"
+                />
               </div>
-            ))}
-          </div>
-        )}
+              <h3 className="font-medium text-gray-800 text-sm mt-2 mb-1">{p.name}</h3>
+              <p className="text-orange-600 font-bold mb-3">{p.price} DA</p>
+              <div className="mt-auto flex gap-2">
+                <button
+                  onClick={() => handleAddToCart(p)}
+                  className={`flex-1 py-1.5 rounded-md text-sm flex items-center justify-center gap-2 text-white transition-all duration-200 ${
+                    clickedButton === p.id
+                      ? "bg-orange-600 scale-95 shadow-lg"
+                      : "bg-orange-500 hover:bg-orange-600 hover:shadow-md"
+                  }`}
+                >
+                  <FaShoppingCart /> Add to Cart
+                </button>
+                <button
+                  onClick={() => handleViewProduct(p)}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 rounded-md text-sm flex items-center justify-center"
+                >
+                  <FaEye />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Pagination */}
+        <div className="flex justify-center mt-8 gap-2">
+          {[1, 2, 3].map(n => (
+            <button
+              key={n}
+              className="px-3 py-1 border border-gray-200 bg-white rounded hover:bg-gray-100 text-sm"
+            >
+              {n}
+            </button>
+          ))}
+        </div>
       </main>
+
+      {/* Product Modal */}
+      {selectedProduct && (
+        <div
+          className="fixed inset-0 flex justify-center items-center z-50 bg-transparent"
+          onClick={closeModal}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-80 sm:w-[400px] transform scale-100 transition-transform duration-300 hover:scale-105 p-5 relative border border-gray-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={closeModal}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+            >
+              <FaTimes size={18} />
+            </button>
+            <img
+              src={selectedProduct.image}
+              alt={selectedProduct.name}
+              className="w-full h-52 object-cover rounded-lg mb-4"
+            />
+            <h2 className="text-lg font-semibold text-gray-800 mb-2">{selectedProduct.name}</h2>
+            <p className="text-orange-600 font-bold mb-2">{selectedProduct.price} DA</p>
+            <p className="text-gray-600 text-sm mb-4">
+              Category: <span className="font-medium">{selectedProduct.category}</span>
+            </p>
+            <button
+              onClick={() => { handleAddToCart(selectedProduct); closeModal(); }}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-md font-medium transition"
+            >
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

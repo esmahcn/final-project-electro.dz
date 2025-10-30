@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { FaEnvelope, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -19,10 +21,24 @@ function Login() {
       });
 
       const data = await res.json();
-      if (res.ok) {
+
+      if (res.ok && data.success) {
         setMessage("✅ Login successful!");
-        console.log("User logged in:", data);
-        setTimeout(() => navigate("/"), 1000); // Redirect to Home after 1 second
+
+        // ✅ Save user info globally + localStorage
+        const userData = {
+          email: data.email,
+          role: data.role, // Backend must send "admin" or "user"
+        };
+        login(userData);
+
+        console.log("Logged in user:", userData);
+
+        // ✅ Redirect according to role
+        setTimeout(() => {
+          if (userData.role === "admin") navigate("/dashboard");
+          else navigate("/");
+        }, 500);
       } else {
         setMessage(data.message || "❌ Invalid credentials");
       }
@@ -34,7 +50,6 @@ function Login() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
-      {/* Left Image Section */}
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-orange-50 via-white to-gray-100 items-center justify-center">
         <img
           src="/images/forget.png"
@@ -43,7 +58,6 @@ function Login() {
         />
       </div>
 
-      {/* Right Form Section */}
       <div className="flex-1 flex items-center justify-center py-12 px-6">
         <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
           <h1 className="text-2xl font-bold text-center text-orange-600 mb-6">
@@ -51,11 +65,8 @@ function Login() {
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email */}
             <div>
-              <label className="block text-gray-700 font-medium mb-1">
-                Email
-              </label>
+              <label className="block text-gray-700 font-medium mb-1">Email</label>
               <div className="flex items-center border border-gray-300 rounded-md p-2 focus-within:ring-2 focus-within:ring-orange-500">
                 <FaEnvelope className="text-gray-500 mr-2" />
                 <input
@@ -69,11 +80,8 @@ function Login() {
               </div>
             </div>
 
-            {/* Password */}
             <div>
-              <label className="block text-gray-700 font-medium mb-1">
-                Password
-              </label>
+              <label className="block text-gray-700 font-medium mb-1">Password</label>
               <div className="flex items-center border border-gray-300 rounded-md p-2 focus-within:ring-2 focus-within:ring-orange-500">
                 <FaLock className="text-gray-500 mr-2" />
                 <input
@@ -87,17 +95,12 @@ function Login() {
               </div>
             </div>
 
-            {/* Forgot Password */}
             <div className="text-right">
-              <a
-                href="/forgot-password"
-                className="text-sm text-orange-600 hover:underline"
-              >
+              <a href="/forgot-password" className="text-sm text-orange-600 hover:underline">
                 Forgot Password?
               </a>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               className="w-full bg-orange-600 text-white py-2 rounded-md font-semibold hover:bg-orange-700 transition"
@@ -105,12 +108,8 @@ function Login() {
               Login
             </button>
 
-            {/* Feedback Message */}
-            {message && (
-              <p className="text-center text-sm mt-3 text-gray-700">{message}</p>
-            )}
+            {message && <p className="text-center text-sm mt-3 text-gray-700">{message}</p>}
 
-            {/* Link to Register */}
             <p className="text-center text-gray-600 text-sm mt-4">
               Don’t have an account?{" "}
               <a href="/register" className="text-orange-600 hover:underline">
