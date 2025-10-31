@@ -16,6 +16,8 @@ function Products() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+
   const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -24,24 +26,23 @@ function Products() {
     image: "",
   });
 
-  // ✅ Categories
   const categories = ["All", "Lighting", "Tools", "Cables", "Switches", "Accessories"];
 
   // ✅ Fetch products from backend
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   const fetchProducts = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/products");
       setProducts(res.data);
     } catch (err) {
-      console.error("Error fetching products:", err);
+      console.error("❌ Error fetching products:", err);
     }
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  // ✅ Add new product
+  // ✅ Add or Edit product
   const handleSave = async () => {
     if (!newProduct.name || !newProduct.price || !newProduct.image) {
       alert("Please fill all fields");
@@ -49,40 +50,54 @@ function Products() {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/products", newProduct);
-      alert("✅ Product added successfully!");
+      if (editingProduct) {
+        // UPDATE product
+        await axios.put(
+          `http://localhost:5000/api/products/${editingProduct._id}`,
+          newProduct
+        );
+        alert("✅ Product updated successfully!");
+      } else {
+        // CREATE new product
+        await axios.post("http://localhost:5000/api/products", newProduct);
+        alert("✅ Product added successfully!");
+      }
       setIsModalOpen(false);
+      setEditingProduct(null);
       setNewProduct({ name: "", price: "", category: "Lighting", image: "" });
       fetchProducts();
     } catch (err) {
-      console.error("Error adding product:", err);
-      alert("❌ Failed to add product");
+      console.error("❌ Error saving product:", err);
+      alert("Error saving product");
     }
   };
 
   // ✅ Delete product
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
-
-    try {
-      await axios.delete(`http://localhost:5000/api/products/${id}`);
-      fetchProducts();
-    } catch (err) {
-      console.error("Error deleting product:", err);
-      alert("❌ Failed to delete product");
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      try {
+        await axios.delete(`http://localhost:5000/api/products/${id}`);
+        alert("🗑️ Product deleted!");
+        fetchProducts();
+      } catch (err) {
+        console.error("❌ Error deleting product:", err);
+      }
     }
   };
 
-  // ✅ Edit (optional future feature)
+  // ✅ Edit product (open modal pre-filled)
   const handleEdit = (product) => {
-    alert(`Edit product: ${product.name} (Coming soon)`);
-  };
-
-  const handleAdd = () => {
+    setEditingProduct(product);
+    setNewProduct({
+      name: product.name,
+      price: product.price,
+      category: product.category,
+      image: product.image,
+    });
     setIsModalOpen(true);
   };
 
-  // ✅ Filter and sort
+  // ✅ Filter + Sort
   const filteredProducts = products
     .filter((p) => selectedCategory === "All" || p.category === selectedCategory)
     .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
@@ -133,7 +148,7 @@ function Products() {
         ></div>
       )}
 
-      {/* Main */}
+      {/* Main Content */}
       <main className="flex-1 lg:w-3/4 xl:w-4/5 p-4 sm:p-6 lg:p-8">
         {/* Controls */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
@@ -168,7 +183,7 @@ function Products() {
           </div>
 
           <button
-            onClick={handleAdd}
+            onClick={() => setIsModalOpen(true)}
             className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md shadow-sm text-sm flex items-center gap-2"
           >
             <FaPlus /> Add Product
@@ -189,13 +204,9 @@ function Products() {
                   className="w-full h-36 object-cover transform transition-transform duration-300 hover:scale-105"
                 />
               </div>
-              <h3 className="font-medium text-gray-800 text-sm mt-2 mb-1">
-                {p.name}
-              </h3>
+              <h3 className="font-medium text-gray-800 text-sm mt-2 mb-1">{p.name}</h3>
               <p className="text-orange-600 font-bold mb-3">{p.price} DA</p>
-              <p className="text-gray-600 text-xs mb-3">
-                Category: {p.category}
-              </p>
+              <p className="text-gray-600 text-xs mb-3">Category: {p.category}</p>
               <div className="mt-auto flex gap-2">
                 <button
                   onClick={() => handleEdit(p)}
@@ -215,7 +226,7 @@ function Products() {
         </div>
       </main>
 
-      {/* Add Product Modal */}
+      {/* Add/Edit Product Modal */}
       {isModalOpen && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50"
@@ -232,7 +243,7 @@ function Products() {
               <FaTimes size={18} />
             </button>
             <h2 className="text-lg font-semibold mb-4 text-gray-800">
-              Add New Product
+              {editingProduct ? "Edit Product" : "Add New Product"}
             </h2>
 
             <div className="space-y-3">
@@ -282,7 +293,7 @@ function Products() {
               onClick={handleSave}
               className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-md mt-5 font-medium"
             >
-              Save Product
+              {editingProduct ? "Update Product" : "Save Product"}
             </button>
           </div>
         </div>
