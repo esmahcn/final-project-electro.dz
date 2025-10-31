@@ -26,9 +26,11 @@ function Products() {
     image: "",
   });
 
+  const [previewImage, setPreviewImage] = useState(null);
+
   const categories = ["All", "Lighting", "Tools", "Cables", "Switches", "Accessories"];
 
-  // ✅ Fetch products from backend
+  // Fetch products from backend
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -42,29 +44,46 @@ function Products() {
     }
   };
 
-  // ✅ Add or Edit product
+  // Add or Edit product with image upload
   const handleSave = async () => {
-    if (!newProduct.name || !newProduct.price || !newProduct.image) {
+    if (!newProduct.name || !newProduct.price || (!newProduct.image && !editingProduct)) {
       alert("Please fill all fields");
       return;
     }
 
     try {
+      const formData = new FormData();
+      formData.append("name", newProduct.name);
+      formData.append("price", newProduct.price);
+      formData.append("category", newProduct.category);
+
+      // If image is a File (new upload), append it
+      if (newProduct.image instanceof File) {
+        formData.append("image", newProduct.image);
+      }
+
       if (editingProduct) {
         // UPDATE product
         await axios.put(
           `http://localhost:5000/api/products/${editingProduct._id}`,
-          newProduct
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
         );
         alert("✅ Product updated successfully!");
       } else {
         // CREATE new product
-        await axios.post("http://localhost:5000/api/products", newProduct);
+        await axios.post(
+          "http://localhost:5000/api/products",
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
         alert("✅ Product added successfully!");
       }
+
       setIsModalOpen(false);
       setEditingProduct(null);
       setNewProduct({ name: "", price: "", category: "Lighting", image: "" });
+      setPreviewImage(null);
       fetchProducts();
     } catch (err) {
       console.error("❌ Error saving product:", err);
@@ -72,7 +91,7 @@ function Products() {
     }
   };
 
-  // ✅ Delete product
+  // Delete product
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
@@ -85,19 +104,20 @@ function Products() {
     }
   };
 
-  // ✅ Edit product (open modal pre-filled)
+  // Edit product (open modal pre-filled)
   const handleEdit = (product) => {
     setEditingProduct(product);
     setNewProduct({
       name: product.name,
       price: product.price,
       category: product.category,
-      image: product.image,
+      image: product.image, // existing image URL
     });
+    setPreviewImage(product.image); // show existing image as preview
     setIsModalOpen(true);
   };
 
-  // ✅ Filter + Sort
+  // Filter + Sort
   const filteredProducts = products
     .filter((p) => selectedCategory === "All" || p.category === selectedCategory)
     .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
@@ -279,14 +299,21 @@ function Products() {
                   ))}
               </select>
               <input
-                type="text"
-                placeholder="Image URL"
-                value={newProduct.image}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, image: e.target.value })
-                }
+                type="file"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  setNewProduct({ ...newProduct, image: file });
+                  setPreviewImage(URL.createObjectURL(file));
+                }}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm outline-none"
               />
+              {previewImage && (
+                <img
+                  src={previewImage}
+                  alt="Preview"
+                  className="w-full h-36 object-cover rounded-md mt-2"
+                />
+              )}
             </div>
 
             <button
