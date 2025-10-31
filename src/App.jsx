@@ -22,8 +22,11 @@ import Checkout from "./pages/Checkout";
 import ThankYou from "./pages/ThankYou";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import Products from "./pages/Dashboard/Products";
+import Orders from "./pages/Dashboard/Orders";
+import Users from "./pages/Dashboard/Users";
 
-// 🔒 Protected route for admin
+// 🔒 Protect admin routes
 function AdminRoute({ children }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
@@ -31,6 +34,7 @@ function AdminRoute({ children }) {
   return children;
 }
 
+// 🧩 Layout: hides Navbar/Footer on auth pages
 function Layout({ children }) {
   const location = useLocation();
   const hideLayout =
@@ -54,6 +58,7 @@ function App() {
         <CartProvider>
           <Layout>
             <Routes>
+              {/* 🌍 Public Routes */}
               <Route path="/" element={<Home />} />
               <Route path="/shop" element={<Shop />} />
               <Route path="/categories" element={<Categories />} />
@@ -65,17 +70,36 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/dashboard/*" element={<Dashboard />} />
 
-              {/* ✅ Placeholder for admin dashboard (next step) */}
+              {/* 🧠 Admin Dashboard (Protected) */}
               <Route
-                path="/admin/dashboard"
+                path="/dashboard/*"
                 element={
                   <AdminRoute>
-                    <div className="p-10 text-center text-2xl font-bold text-orange-600">
-                      Admin Dashboard (coming soon)
-                    </div>
+                    <Dashboard />
                   </AdminRoute>
+                }
+              >
+                <Route
+                  index
+                  element={
+                    <div className="text-2xl font-bold text-center text-gray-700 mt-10">
+                      Welcome, Admin 👋
+                    </div>
+                  }
+                />
+                <Route path="products" element={<Products />} />
+                <Route path="orders" element={<Orders />} />
+                <Route path="users" element={<Users />} />
+              </Route>
+
+              {/* 404 Page */}
+              <Route
+                path="*"
+                element={
+                  <div className="text-center text-3xl py-20 text-gray-600">
+                    404 - Page Not Found
+                  </div>
                 }
               />
             </Routes>
