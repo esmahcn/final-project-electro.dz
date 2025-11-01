@@ -14,7 +14,7 @@ function Login() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://final-project-electrodz-backend.onrender.com/api/login", {
+     const res = await fetch("https://final-project-electrodz-backend.onrender.com/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
