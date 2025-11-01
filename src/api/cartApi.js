@@ -1,4 +1,5 @@
-const API_URL = "http://localhost:5000/api/cart";
+const API_URL = "https://final-project-electrodz-backend.onrender.com/api/cart";
+
 
 // ✅ Add item to cart
 export const addToCart = async (userId, product) => {

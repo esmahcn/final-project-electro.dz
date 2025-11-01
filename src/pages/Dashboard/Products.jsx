@@ -37,7 +37,7 @@ function Products() {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/products");
+      const res = await axios.get("http://final-project-electrodz-backend.onrender.com/api/products");
       setProducts(res.data);
     } catch (err) {
       console.error("❌ Error fetching products:", err);
@@ -65,7 +65,7 @@ function Products() {
       if (editingProduct) {
         // UPDATE product
         await axios.put(
-          `http://localhost:5000/api/products/${editingProduct._id}`,
+          `http://final-project-electrodz-backend.onrender.com/api/products/${editingProduct._id}`,
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
@@ -73,7 +73,7 @@ function Products() {
       } else {
         // CREATE new product
         await axios.post(
-          "http://localhost:5000/api/products",
+          "http://final-project-electrodz-backend.onrender.com/api/products",
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
@@ -95,7 +95,7 @@ function Products() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/products/${id}`);
+        await axios.delete(`http://final-project-electrodz-backend.onrender.com/api/products/${id}`);
         alert("🗑️ Product deleted!");
         fetchProducts();
       } catch (err) {
