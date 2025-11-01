@@ -12,7 +12,7 @@ export default function AdminDashboard() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://final-project-electrodz-backend.onrender.com/api/products");
+      const res = await fetch("https://final-project-electrodz-backend.onrender.com/api/products");
       const data = await res.json();
       setProducts(data);
     } catch (err) {
@@ -24,7 +24,7 @@ export default function AdminDashboard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = editing ? `http://final-project-electrodz-backend.onrender.com/api/products/${editing._id}` : "http://final-project-electrodz-backend.onrender.com/api/products";
+    const url = editing ? `https://final-project-electrodz-backend.onrender.com/api/products/${editing._id}` : "https://final-project-electrodz-backend.onrender.com/api/products";
     const method = editing ? "PUT" : "POST";
     try {
       await fetch(url, {
@@ -41,7 +41,7 @@ export default function AdminDashboard() {
   const handleDelete = async (id) => {
     if (!confirm("Delete product?")) return;
     try {
-      await fetch(`http://final-project-electrodz-backend.onrender.com/api/products/${id}`, {
+      await fetch(`https://final-project-electrodz-backend.onrender.com/api/products/${id}`, {
         method: "DELETE",
         headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       });
